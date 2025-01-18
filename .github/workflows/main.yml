@@ -1,0 +1,47 @@
+name: Build and Package C++ Application
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  
+
+    steps:
+   
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+
+    - name: Set up C++ build environment
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential cmake
+
+    
+    - name: Build the C++ project
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+   
+    - name: Package the C++ application
+      run: |
+        cd build
+        mkdir package
+        cp my_application ./package  # Replace 'my_application' with your binary name
+        tar -czf my_application.tar.gz -C package .
+      
+    
+    - name: Upload packaged artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my_application
+        path: build/my_application.tar.gz
